@@ -7,6 +7,7 @@ use libc::c_char;
 use msg_generated::deno as msg;
 use std;
 use std::ffi::CStr;
+use std::error::Error;
 use std::fs::File;
 use std::path::Path;
 use std::result::Result;
@@ -14,12 +15,6 @@ use url;
 use url::Url;
 
 const ASSET_PREFIX: &str = "/$asset$/";
-
-#[test]
-fn test_url() {
-  let issue_list_url = Url::parse("https://github.com/rust-lang").unwrap();
-  assert!(issue_list_url.scheme() == "https");
-}
 
 // Help. Is there a way to do this without macros?
 // Want: fn str_from_ptr(*const c_char) -> &str
@@ -249,8 +244,6 @@ struct CodeFetchOutput {
   maybe_output_code: Option<String>,
 }
 
-use std::error::Error;
-
 fn code_fetch(
   module_specifier: &str,
   containing_file: &str,
@@ -291,6 +284,26 @@ fn code_fetch(
       maybe_output_code: Some(output_code),
     }),
   }
+}
+
+#[test]
+fn test_code_fetch() {
+  deno_dir::reset().expect("deno_dir::reset error");
+
+  // Test failure case.
+  let module_specifier = "./hello.ts";
+  let containing_file = "/baddir/badfile.ts";
+  let r = code_fetch(module_specifier, containing_file);
+  assert!(r.is_err());
+
+  // Assuming cwd is the deno repo root.
+  let module_specifier = "./js/main.ts";
+  let containing_file = ".";
+  let r = code_fetch(module_specifier, containing_file);
+  assert!(r.is_ok());
+
+  //assert!(cache_path.exists());
+  //assert_eq!(output_code, fs::read_file_sync(&cache_path).unwrap());
 }
 
 // https://github.com/ry/deno/blob/golang/os.go#L100-L154
