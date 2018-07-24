@@ -102,7 +102,13 @@ fn test_source_code_hash() {
 
 #[cfg(test)]
 pub fn reset() -> std::io::Result<()> {
-  std::fs::remove_dir_all(path(Root))?;
+  std::fs::remove_dir_all(path(Root)).or_else(|err| {
+    if err.kind() == std::io::ErrorKind::NotFound {
+      Ok(())
+    } else {
+      Err(err)
+    }
+  })?;
   unsafe {
     ROOT = None;
     DEPS = None;
