@@ -13,7 +13,7 @@ pub enum Dirname {
   // In the Go code this was called SrcDir. Renaming to Deps.
   // Example: /Users/rld/.deno/deps/
   Deps,
-  // In the Go code this was called CacheDir. Renaming to GEN.
+  // In the Go code this was called CacheDir. Renaming to Gen.
   // Example: /Users/rld/.deno/gen/
   Gen,
 }
