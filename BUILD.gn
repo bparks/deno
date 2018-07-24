@@ -37,6 +37,7 @@ config("deno_config") {
 main_extern = [
   "$rust_build:libc",
   "$rust_build:log",
+  "$rust_build:sha1",
   "$rust_build:url",
   "//build_extra/flatbuffers/rust:flatbuffers",
   ":msg_rs",
