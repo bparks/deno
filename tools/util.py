@@ -1,6 +1,7 @@
 # Copyright 2018 Ryan Dahl <ry@tinyclouds.org>
 # All rights reserved. MIT License.
 import os
+import sys
 import subprocess
 
 executable_suffix = ".exe" if os.name == "nt" else ""
@@ -14,7 +15,9 @@ def run(args, quiet=False, envs={}):
         env[key] = envs[key]
     args[0] = os.path.normpath(args[0])
     shell = os.name == "nt"  # Run through shell to make .bat/.cmd files work.
-    subprocess.check_call(args, env=env, shell=shell)
+    rc = subprocess.call(args, env=env, shell=shell)
+    if rc != 0:
+        sys.exit(rc)
 
 
 def remove_and_symlink(target, name, target_is_dir=False):
